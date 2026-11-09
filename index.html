@@ -7,65 +7,38 @@
 <title>Benny Bunny Learning World</title>
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;background:#fff8ed;color:#51443c;
- font-family:Arial,sans-serif;text-align:center
-}
+body{margin:0;background:#fff8ed;color:#51443c;font-family:Arial,sans-serif;text-align:center}
 header{background:#bceafa;padding:18px 12px}
 .bunny{font-size:72px}
 h1{color:#347c9b;font-size:26px;margin:8px}
 main{max-width:550px;margin:auto;padding:18px}
-.welcome,.panel{
- background:white;border-radius:22px;padding:22px 16px;
- box-shadow:0 4px 14px #00000012;margin-bottom:18px
-}
+.welcome,.panel{background:white;border-radius:22px;padding:22px 16px;box-shadow:0 4px 14px #00000012;margin-bottom:18px}
 h2{color:#397c9a}
 .games{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.tile{
- background:#fff0d8;border-radius:18px;padding:16px 8px;
- border:2px solid #f4dfc1;min-height:135px
-}
+.tile{background:#fff0d8;border-radius:18px;padding:16px 8px;border:2px solid #f4dfc1;min-height:135px}
 .tile span{font-size:40px;display:block;margin-bottom:8px}
 .tile strong{display:block;margin:7px}
-.play{
- background:#62b98b;color:white;border:0;
- padding:13px 22px;border-radius:25px;
- font-size:16px;font-weight:bold;cursor:pointer
-}
+.play{background:#62b98b;color:white;border:0;padding:13px 22px;border-radius:25px;font-size:16px;font-weight:bold;cursor:pointer}
 .back{background:#8bbbd0;margin:5px}
 .hidden{display:none!important}
-.level{
- background:#f5f8fa;border:2px solid #e4e9ed;
- border-radius:15px;padding:16px;margin:12px 0;
- text-align:left
-}
+.level{background:#f5f8fa;border:2px solid #e4e9ed;border-radius:15px;padding:16px;margin:12px 0;text-align:left}
 .level button{float:right}
 .level p{font-size:13px;color:#777;margin-bottom:0}
 .locked{opacity:.55}
-.object{font-size:85px;margin:18px}
+.object{font-size:90px;margin:18px}
 .question{font-size:19px;font-weight:bold;margin:15px}
-.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.choice{
- background:#f5f5f5;border:3px solid transparent;
- border-radius:15px;padding:12px 5px;
- font-size:18px;font-weight:bold;cursor:pointer
-}
-.choice:disabled{opacity:.8}
-.swatch{
- display:block;width:45px;height:45px;border-radius:50%;
- margin:0 auto 8px
-}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.choice{background:#f5f5f5;border:3px solid transparent;border-radius:15px;padding:12px 4px;font-size:15px;font-weight:bold;cursor:pointer;min-width:0}
+.choice:disabled{opacity:.9}
+.swatch{display:block;width:48px;height:48px;border-radius:50%;margin:0 auto 8px;border:2px solid #ddd}
 .feedback{min-height:40px;font-weight:bold;margin:17px 0}
 .score{margin:12px}
-.progress{
- height:12px;background:#eee;border-radius:20px;
- overflow:hidden;margin:15px 0
-}
+.progress{height:12px;background:#eee;border-radius:20px;overflow:hidden;margin:15px 0}
 .bar{height:100%;background:#62b98b;width:0%}
 footer{padding:20px;color:#887b70;font-size:13px}
+@media(max-width:350px){.choice{font-size:13px}.swatch{width:40px;height:40px}}
 </style>
 </head>
-
 <body>
 <header>
  <div class="bunny">🐰</div>
@@ -81,7 +54,6 @@ footer{padding:20px;color:#887b70;font-size:13px}
   <p>Are you ready to learn and play?</p>
   <div style="font-size:45px">🌈 ⭐ 🧸</div>
  </div>
-
  <h2>Choose Your Adventure!</h2>
  <div class="games">
   <div class="tile">
@@ -89,28 +61,16 @@ footer{padding:20px;color:#887b70;font-size:13px}
    <strong>Color Adventure</strong>
    <button class="play" onclick="showLevels()">Play Now</button>
   </div>
-  <div class="tile">
-   <span>🔢</span>
-   <strong>Counting Adventure</strong>
-   <small>Coming Soon!</small>
-  </div>
-  <div class="tile">
-   <span>🧩</span>
-   <strong>Picture Quiz</strong>
-   <small>Coming Soon!</small>
-  </div>
-  <div class="tile">
-   <span>📚</span>
-   <strong>Learning Corner</strong>
-   <small>Coming Soon!</small>
-  </div>
+  <div class="tile"><span>🔢</span><strong>Counting Adventure</strong><small>Coming Soon!</small></div>
+  <div class="tile"><span>🧩</span><strong>Picture Quiz</strong><small>Coming Soon!</small></div>
+  <div class="tile"><span>📚</span><strong>Learning Corner</strong><small>Coming Soon!</small></div>
  </div>
 </section>
 
 <section id="levels" class="panel hidden">
  <button class="play back" onclick="goHome()">← Home</button>
  <h2>🌈 Color Adventure</h2>
- <p>Complete every question correctly to unlock your next level!</p>
+ <p>Get every answer correct to unlock your next level!</p>
  <div id="levelList"></div>
 </section>
 
@@ -119,14 +79,12 @@ footer{padding:20px;color:#887b70;font-size:13px}
  <h2 id="levelTitle">Little Learner</h2>
  <div class="score" id="score"></div>
  <div class="progress"><div class="bar" id="bar"></div></div>
- <div class="question" id="question">Help Benny find the color!</div>
- <div class="object" id="object">🍎</div>
+ <div class="question" id="question"></div>
+ <div class="object" id="object"></div>
  <div class="question">What color is this object?</div>
  <div class="choices" id="choices"></div>
  <div class="feedback" id="feedback">Choose your answer!</div>
- <button class="play" id="next" onclick="nextQuestion()" disabled>
- Next Question ➜
- </button>
+ <button class="play" id="next" onclick="nextQuestion()" disabled>Next Question ➜</button>
 </section>
 
 <section id="result" class="panel hidden"></section>
@@ -139,65 +97,78 @@ footer{padding:20px;color:#887b70;font-size:13px}
 
 <script>
 const levels=[
- {
-  name:"Little Learner",
-  subtitle:"Basic colors",
-  questions:[
-   ["🍎","Red",["Red","Blue","Yellow","Green"]],
-   ["🌊","Blue",["Blue","Red","Green","Yellow"]],
-   ["🍌","Yellow",["Yellow","Purple","Red","Blue"]],
-   ["🐸","Green",["Green","Orange","Blue","Red"]],
-   ["🥕","Orange",["Orange","Yellow","Purple","Green"]],
-   ["🍇","Purple",["Purple","Red","Blue","Orange"]]
-  ]
- },
- {
-  name:"Color Explorer",
-  subtitle:"More colors and objects",
-  questions:[
-   ["🍓","Red",["Pink","Red","Orange","Purple"]],
-   ["☁️","White",["White","Black","Gray","Blue"]],
-   ["🖤","Black",["Black","Brown","White","Gray"]],
-   ["🐻","Brown",["Brown","Orange","Yellow","Black"]],
-   ["🌸","Pink",["Pink","Purple","Red","White"]],
-   ["🐬","Blue",["Green","Blue","Gray","Purple"]],
-   ["🥦","Green",["Yellow","Green","Brown","Orange"]],
-   ["🍊","Orange",["Red","Orange","Pink","Yellow"]]
-  ]
- },
- {
-  name:"Color Champion",
-  subtitle:"Challenging color choices",
-  questions:[
-   ["🍋","Yellow",["Lime","Yellow","Gold","Cream"]],
-   ["🌺","Pink",["Pink","Red","Purple","Orange"]],
-   ["🌳","Green",["Green","Teal","Olive","Brown"]],
-   ["🌌","Blue",["Navy","Blue","Purple","Teal"]],
-   ["🍫","Brown",["Brown","Black","Gray","Orange"]],
-   ["🌷","Purple",["Pink","Violet","Blue","Red"]],
-   ["🧡","Orange",["Gold","Orange","Yellow","Red"]],
-   ["🥛","White",["Cream","Gray","White","Silver"]],
-   ["🪨","Gray",["Black","White","Gray","Brown"]],
-   ["🍒","Red",["Pink","Red","Orange","Purple"]]
-  ]
- },
- {
-  name:"Rainbow Master",
-  subtitle:"Advanced color matching",
-  questions:[
-   ["🌅","Orange",["Orange","Coral","Gold","Pink"]],
-   ["🫐","Blue",["Blue","Navy","Purple","Teal"]],
-   ["🌿","Green",["Mint","Olive","Green","Lime"]],
-   ["🌷","Pink",["Rose","Pink","Coral","Purple"]],
-   ["🍇","Purple",["Violet","Purple","Indigo","Pink"]],
-   ["🥥","White",["Ivory","White","Cream","Gray"]],
-   ["🪵","Brown",["Tan","Brown","Beige","Orange"]],
-   ["🌑","Black",["Gray","Black","Navy","Brown"]],
-   ["🌞","Yellow",["Gold","Yellow","Cream","Lime"]],
-   ["🪨","Gray",["Silver","Gray","White","Black"]]
-  ]
- }
+{
+ name:"Little Learner",
+ subtitle:"Let's learn basic colors!",
+ questions:[
+  ["🍎","Red",["Red","Blue","Yellow"]],
+  ["🔵","Blue",["Blue","Orange","Red"]],
+  ["🍌","Yellow",["Yellow","Purple","Green"]],
+  ["🐸","Green",["Green","Pink","Red"]],
+  ["🥕","Orange",["Orange","Blue","Purple"]],
+  ["🍇","Purple",["Purple","Yellow","Orange"]]
+ ]
+},
+{
+ name:"Color Explorer",
+ subtitle:"Discover more colorful objects!",
+ questions:[
+  ["🍓","Red",["Red","Blue","Yellow"]],
+  ["🥛","White",["White","Orange","Purple"]],
+  ["🐈‍⬛","Black",["Black","Yellow","Pink"]],
+  ["🧸","Brown",["Brown","Blue","Red"]],
+  ["🌸","Pink",["Pink","Green","Orange"]],
+  ["🐦","Blue",["Blue","Brown","Yellow"]],
+  ["🥦","Green",["Green","Pink","Purple"]],
+  ["🎃","Orange",["Orange","Blue","Black"]]
+ ]
+},
+{
+ name:"Color Champion",
+ subtitle:"Can you match every object?",
+ questions:[
+  ["🍅","Red",["Red","Purple","Green"]],
+  ["🌞","Yellow",["Yellow","Blue","Pink"]],
+  ["🍃","Green",["Green","Orange","Red"]],
+  ["🦋","Blue",["Blue","Yellow","Brown"]],
+  ["🍆","Purple",["Purple","Green","Orange"]],
+  ["🐷","Pink",["Pink","Blue","Yellow"]],
+  ["🛞","Black",["Black","Pink","Green"]],
+  ["🐻","Brown",["Brown","Purple","Blue"]],
+  ["🥛","White",["White","Red","Orange"]],
+  ["🍊","Orange",["Orange","Blue","Pink"]]
+ ]
+},
+{
+ name:"Rainbow Master",
+ subtitle:"Show Benny your color skills!",
+ questions:[
+  ["🚒","Red",["Red","Green","Purple"]],
+  ["🐳","Blue",["Blue","Orange","Yellow"]],
+  ["⭐","Yellow",["Yellow","Black","Pink"]],
+  ["🐢","Green",["Green","Red","Purple"]],
+  ["🍊","Orange",["Orange","Blue","Brown"]],
+  ["🍇","Purple",["Purple","Yellow","Green"]],
+  ["🎀","Pink",["Pink","Black","Orange"]],
+  ["☁️","White",["White","Blue","Red"]],
+  ["🐈‍⬛","Black",["Black","Yellow","Pink"]],
+  ["🐻","Brown",["Brown","Blue","Purple"]]
+ ]
+}
 ];
+
+const colors={
+ Red:"#F44336",
+ Blue:"#2196F3",
+ Yellow:"#FFEB3B",
+ Green:"#4CAF50",
+ Orange:"#FF9800",
+ Purple:"#9C27B0",
+ Pink:"#F48FB1",
+ White:"#FFFFFF",
+ Black:"#212121",
+ Brown:"#795548"
+};
 
 let unlocked=Number(localStorage.getItem("bennyUnlocked")||1);
 let currentLevel=0;
@@ -205,43 +176,26 @@ let currentQuestion=0;
 let mistakes=0;
 let answered=false;
 
-const colors={
- Red:"#ef5350",Blue:"#42a5f5",Yellow:"#fdd835",
- Green:"#66bb6a",Orange:"#ff9800",Purple:"#ab7bc8",
- Pink:"#f48fb1",White:"#ffffff",Black:"#252525",
- Brown:"#795548",Gray:"#9e9e9e",Violet:"#8e44ad",
- Gold:"#d4af37",Cream:"#fffdd0",Lime:"#a4de02",
- Navy:"#1b2a57",Teal:"#008b8b",Olive:"#808000",
- Coral:"#ff7f50",Mint:"#98ff98",Rose:"#e89cae",
- Indigo:"#4b0082",Ivory:"#fffff0",Silver:"#c0c0c0",
- Tan:"#d2b48c",Beige:"#f5f5dc"
-};
-
 function hideAll(){
  ["home","levels","game","result"].forEach(id=>
- document.getElementById(id).classList.add("hidden"));
+  document.getElementById(id).classList.add("hidden"));
 }
-
 function goHome(){
  hideAll();
  document.getElementById("home").classList.remove("hidden");
 }
-
 function showLevels(){
  hideAll();
  document.getElementById("levels").classList.remove("hidden");
  renderLevels();
 }
-
 function renderLevels(){
  const list=document.getElementById("levelList");
  list.innerHTML="";
-
  levels.forEach((level,i)=>{
   const open=i<unlocked;
   const item=document.createElement("div");
   item.className="level"+(open?"":" locked");
-
   item.innerHTML=`
    <strong>${i+1}. ${level.name}</strong>
    <button class="play" ${open?"":"disabled"}>
@@ -249,14 +203,10 @@ function renderLevels(){
    </button>
    <p>${level.questions.length} questions · ${level.subtitle}</p>
   `;
-
-  if(open){
-   item.querySelector("button").onclick=()=>startLevel(i);
-  }
+  if(open)item.querySelector("button").onclick=()=>startLevel(i);
   list.appendChild(item);
  });
 }
-
 function startLevel(i){
  currentLevel=i;
  currentQuestion=0;
@@ -266,46 +216,36 @@ function startLevel(i){
  document.getElementById("levelTitle").textContent=levels[i].name;
  showQuestion();
 }
-
 function showQuestion(){
  answered=false;
  const q=levels[currentLevel].questions[currentQuestion];
-
  document.getElementById("object").textContent=q[0];
  document.getElementById("question").textContent=
- "Question "+(currentQuestion+1)+" of "+
- levels[currentLevel].questions.length;
-
+ "Question "+(currentQuestion+1)+" of "+levels[currentLevel].questions.length;
  document.getElementById("score").textContent=
- "⭐ Correct: "+(currentQuestion-mistakes)+" | Mistakes: "+mistakes;
-
+ "⭐ Correct: "+currentQuestion+" | Mistakes: "+mistakes;
  document.getElementById("bar").style.width=
  (currentQuestion/levels[currentLevel].questions.length*100)+"%";
-
  document.getElementById("feedback").textContent="Choose the correct color!";
  document.getElementById("next").disabled=true;
 
  const choices=document.getElementById("choices");
  choices.innerHTML="";
-
  [...q[2]].sort(()=>Math.random()-.5).forEach(color=>{
   const b=document.createElement("button");
   b.className="choice";
   b.innerHTML=`
-   <span class="swatch" style="background:${colors[color]||"#ddd"};
-   border:1px solid #ddd"></span>${color}
+   <span class="swatch" style="background:${colors[color]};
+   ${color==="White"?"border:2px solid #999":""}"></span>${color}
   `;
   b.onclick=()=>checkAnswer(color,b);
   choices.appendChild(b);
  });
 }
-
 function checkAnswer(answer,button){
  if(answered)return;
  answered=true;
-
  const correct=levels[currentLevel].questions[currentQuestion][1];
-
  document.querySelectorAll(".choice").forEach(b=>b.disabled=true);
 
  if(answer===correct){
@@ -317,24 +257,23 @@ function checkAnswer(answer,button){
   button.style.borderColor="#ef5350";
   document.getElementById("feedback").textContent=
   "💛 Good try! The correct answer is "+correct+".";
+  document.querySelectorAll(".choice").forEach(b=>{
+   if(b.textContent.trim()===correct)b.style.borderColor="#35a66c";
+  });
  }
-
+ const correctCount=currentQuestion+1-mistakes;
  document.getElementById("score").textContent=
- "⭐ Correct: "+(currentQuestion+(answer===correct?1:0)-mistakes)+" | Mistakes: "+mistakes;
-
+ "⭐ Correct: "+correctCount+" | Mistakes: "+mistakes;
  document.getElementById("next").disabled=false;
 }
-
 function nextQuestion(){
  currentQuestion++;
-
  if(currentQuestion>=levels[currentLevel].questions.length){
   finishLevel();
  }else{
   showQuestion();
  }
 }
-
 function finishLevel(){
  hideAll();
  const passed=mistakes===0;
@@ -369,15 +308,12 @@ function finishLevel(){
    <p>You had ${mistakes} incorrect answer(s).</p>
    <h2>100% is needed to unlock the next level.</h2>
    <p>Try again. Benny believes in you!</p>
-   <button class="play" onclick="startLevel(${currentLevel})">
-   Try Again ↻
-   </button>
+   <button class="play" onclick="startLevel(${currentLevel})">Try Again ↻</button>
    <br><br>
    <button class="play back" onclick="showLevels()">Back to Levels</button>
   `;
  }
 }
-
 goHome();
 </script>
 </body>
