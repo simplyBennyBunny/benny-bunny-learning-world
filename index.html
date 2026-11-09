@@ -11,32 +11,37 @@ body{
  margin:0;background:#fff8ed;color:#51443c;
  font-family:Arial,sans-serif;text-align:center
 }
-header{background:#bceafa;padding:20px 12px}
-.bunny{font-size:75px}
-h1{color:#347c9b;font-size:27px;margin:8px}
-.sub{margin:8px}
+header{background:#bceafa;padding:18px 12px}
+.bunny{font-size:72px}
+h1{color:#347c9b;font-size:26px;margin:8px}
 main{max-width:550px;margin:auto;padding:18px}
-.welcome,.game{
+.welcome,.panel{
  background:white;border-radius:22px;padding:22px 16px;
  box-shadow:0 4px 14px #00000012;margin-bottom:18px
 }
 h2{color:#397c9a}
-.games{
- display:grid;grid-template-columns:1fr 1fr;gap:12px
-}
+.games{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .tile{
- background:#fff0d8;border-radius:18px;padding:18px 8px;
+ background:#fff0d8;border-radius:18px;padding:16px 8px;
  border:2px solid #f4dfc1;min-height:135px
 }
-.tile span{font-size:43px;display:block;margin-bottom:8px}
-.tile strong{display:block;margin:6px}
+.tile span{font-size:40px;display:block;margin-bottom:8px}
+.tile strong{display:block;margin:7px}
 .play{
  background:#62b98b;color:white;border:0;
  padding:13px 22px;border-radius:25px;
  font-size:16px;font-weight:bold;cursor:pointer
 }
-.back{background:#8bbbd0;margin-bottom:15px}
-.hidden{display:none}
+.back{background:#8bbbd0;margin:5px}
+.hidden{display:none!important}
+.level{
+ background:#f5f8fa;border:2px solid #e4e9ed;
+ border-radius:15px;padding:16px;margin:12px 0;
+ text-align:left
+}
+.level button{float:right}
+.level p{font-size:13px;color:#777;margin-bottom:0}
+.locked{opacity:.55}
 .object{font-size:85px;margin:18px}
 .question{font-size:19px;font-weight:bold;margin:15px}
 .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -50,17 +55,22 @@ h2{color:#397c9a}
  display:block;width:45px;height:45px;border-radius:50%;
  margin:0 auto 8px
 }
-.feedback{min-height:35px;font-weight:bold;margin:17px 0}
+.feedback{min-height:40px;font-weight:bold;margin:17px 0}
 .score{margin:12px}
+.progress{
+ height:12px;background:#eee;border-radius:20px;
+ overflow:hidden;margin:15px 0
+}
+.bar{height:100%;background:#62b98b;width:0%}
 footer{padding:20px;color:#887b70;font-size:13px}
 </style>
 </head>
-<body>
 
+<body>
 <header>
  <div class="bunny">🐰</div>
  <h1>Benny Bunny Learning World</h1>
- <p class="sub">Learn • Play • Grow!</p>
+ <p>Learn • Play • Grow!</p>
 </header>
 
 <main>
@@ -73,26 +83,22 @@ footer{padding:20px;color:#887b70;font-size:13px}
  </div>
 
  <h2>Choose Your Adventure!</h2>
-
  <div class="games">
   <div class="tile">
    <span>🎨</span>
    <strong>Color Adventure</strong>
-   <button class="play" onclick="startGame()">Play Now</button>
+   <button class="play" onclick="showLevels()">Play Now</button>
   </div>
-
   <div class="tile">
    <span>🔢</span>
    <strong>Counting Adventure</strong>
    <small>Coming Soon!</small>
   </div>
-
   <div class="tile">
    <span>🧩</span>
    <strong>Picture Quiz</strong>
    <small>Coming Soon!</small>
   </div>
-
   <div class="tile">
    <span>📚</span>
    <strong>Learning Corner</strong>
@@ -101,19 +107,29 @@ footer{padding:20px;color:#887b70;font-size:13px}
  </div>
 </section>
 
-<section id="game" class="game hidden">
+<section id="levels" class="panel hidden">
  <button class="play back" onclick="goHome()">← Home</button>
- <h2>Benny's Color Adventure!</h2>
- <div class="score" id="score">⭐ Stars: 0 | Round: 1 of 6</div>
- <div class="question">Can you help Benny find the color?</div>
+ <h2>🌈 Color Adventure</h2>
+ <p>Complete every question correctly to unlock your next level!</p>
+ <div id="levelList"></div>
+</section>
+
+<section id="game" class="panel hidden">
+ <button class="play back" onclick="showLevels()">← Levels</button>
+ <h2 id="levelTitle">Little Learner</h2>
+ <div class="score" id="score"></div>
+ <div class="progress"><div class="bar" id="bar"></div></div>
+ <div class="question" id="question">Help Benny find the color!</div>
  <div class="object" id="object">🍎</div>
  <div class="question">What color is this object?</div>
  <div class="choices" id="choices"></div>
- <div class="feedback" id="feedback">Choose the correct color!</div>
- <button class="play" id="next" onclick="nextRound()" disabled>
- Next Round ➜
+ <div class="feedback" id="feedback">Choose your answer!</div>
+ <button class="play" id="next" onclick="nextQuestion()" disabled>
+ Next Question ➜
  </button>
 </section>
+
+<section id="result" class="panel hidden"></section>
 </main>
 
 <footer>
@@ -122,53 +138,164 @@ footer{padding:20px;color:#887b70;font-size:13px}
 </footer>
 
 <script>
-const rounds=[
- {emoji:"🍎",color:"Red"},
- {emoji:"🌊",color:"Blue"},
- {emoji:"🍌",color:"Yellow"},
- {emoji:"🐸",color:"Green"},
- {emoji:"🥕",color:"Orange"},
- {emoji:"🍇",color:"Purple"}
+const levels=[
+ {
+  name:"Little Learner",
+  subtitle:"Basic colors",
+  questions:[
+   ["🍎","Red",["Red","Blue","Yellow","Green"]],
+   ["🌊","Blue",["Blue","Red","Green","Yellow"]],
+   ["🍌","Yellow",["Yellow","Purple","Red","Blue"]],
+   ["🐸","Green",["Green","Orange","Blue","Red"]],
+   ["🥕","Orange",["Orange","Yellow","Purple","Green"]],
+   ["🍇","Purple",["Purple","Red","Blue","Orange"]]
+  ]
+ },
+ {
+  name:"Color Explorer",
+  subtitle:"More colors and objects",
+  questions:[
+   ["🍓","Red",["Pink","Red","Orange","Purple"]],
+   ["☁️","White",["White","Black","Gray","Blue"]],
+   ["🖤","Black",["Black","Brown","White","Gray"]],
+   ["🐻","Brown",["Brown","Orange","Yellow","Black"]],
+   ["🌸","Pink",["Pink","Purple","Red","White"]],
+   ["🐬","Blue",["Green","Blue","Gray","Purple"]],
+   ["🥦","Green",["Yellow","Green","Brown","Orange"]],
+   ["🍊","Orange",["Red","Orange","Pink","Yellow"]]
+  ]
+ },
+ {
+  name:"Color Champion",
+  subtitle:"Challenging color choices",
+  questions:[
+   ["🍋","Yellow",["Lime","Yellow","Gold","Cream"]],
+   ["🌺","Pink",["Pink","Red","Purple","Orange"]],
+   ["🌳","Green",["Green","Teal","Olive","Brown"]],
+   ["🌌","Blue",["Navy","Blue","Purple","Teal"]],
+   ["🍫","Brown",["Brown","Black","Gray","Orange"]],
+   ["🌷","Purple",["Pink","Violet","Blue","Red"]],
+   ["🧡","Orange",["Gold","Orange","Yellow","Red"]],
+   ["🥛","White",["Cream","Gray","White","Silver"]],
+   ["🪨","Gray",["Black","White","Gray","Brown"]],
+   ["🍒","Red",["Pink","Red","Orange","Purple"]]
+  ]
+ },
+ {
+  name:"Rainbow Master",
+  subtitle:"Advanced color matching",
+  questions:[
+   ["🌅","Orange",["Orange","Coral","Gold","Pink"]],
+   ["🫐","Blue",["Blue","Navy","Purple","Teal"]],
+   ["🌿","Green",["Mint","Olive","Green","Lime"]],
+   ["🌷","Pink",["Rose","Pink","Coral","Purple"]],
+   ["🍇","Purple",["Violet","Purple","Indigo","Pink"]],
+   ["🥥","White",["Ivory","White","Cream","Gray"]],
+   ["🪵","Brown",["Tan","Brown","Beige","Orange"]],
+   ["🌑","Black",["Gray","Black","Navy","Brown"]],
+   ["🌞","Yellow",["Gold","Yellow","Cream","Lime"]],
+   ["🪨","Gray",["Silver","Gray","White","Black"]]
+  ]
+ }
 ];
 
-const colors=[
- {name:"Red",hex:"#ef5350"},
- {name:"Blue",hex:"#42a5f5"},
- {name:"Yellow",hex:"#fdd835"},
- {name:"Green",hex:"#66bb6a"},
- {name:"Orange",hex:"#ff9800"},
- {name:"Purple",hex:"#ab7bc8"}
-];
+let unlocked=Number(localStorage.getItem("bennyUnlocked")||1);
+let currentLevel=0;
+let currentQuestion=0;
+let mistakes=0;
+let answered=false;
 
-let current=0,stars=0,answered=false;
+const colors={
+ Red:"#ef5350",Blue:"#42a5f5",Yellow:"#fdd835",
+ Green:"#66bb6a",Orange:"#ff9800",Purple:"#ab7bc8",
+ Pink:"#f48fb1",White:"#ffffff",Black:"#252525",
+ Brown:"#795548",Gray:"#9e9e9e",Violet:"#8e44ad",
+ Gold:"#d4af37",Cream:"#fffdd0",Lime:"#a4de02",
+ Navy:"#1b2a57",Teal:"#008b8b",Olive:"#808000",
+ Coral:"#ff7f50",Mint:"#98ff98",Rose:"#e89cae",
+ Indigo:"#4b0082",Ivory:"#fffff0",Silver:"#c0c0c0",
+ Tan:"#d2b48c",Beige:"#f5f5dc"
+};
 
-function startGame(){
- document.getElementById("home").classList.add("hidden");
- document.getElementById("game").classList.remove("hidden");
- current=0;stars=0;showRound();
+function hideAll(){
+ ["home","levels","game","result"].forEach(id=>
+ document.getElementById(id).classList.add("hidden"));
 }
 
 function goHome(){
- document.getElementById("game").classList.add("hidden");
+ hideAll();
  document.getElementById("home").classList.remove("hidden");
 }
 
-function showRound(){
+function showLevels(){
+ hideAll();
+ document.getElementById("levels").classList.remove("hidden");
+ renderLevels();
+}
+
+function renderLevels(){
+ const list=document.getElementById("levelList");
+ list.innerHTML="";
+
+ levels.forEach((level,i)=>{
+  const open=i<unlocked;
+  const item=document.createElement("div");
+  item.className="level"+(open?"":" locked");
+
+  item.innerHTML=`
+   <strong>${i+1}. ${level.name}</strong>
+   <button class="play" ${open?"":"disabled"}>
+    ${open?"Play ▶":"🔒 Locked"}
+   </button>
+   <p>${level.questions.length} questions · ${level.subtitle}</p>
+  `;
+
+  if(open){
+   item.querySelector("button").onclick=()=>startLevel(i);
+  }
+  list.appendChild(item);
+ });
+}
+
+function startLevel(i){
+ currentLevel=i;
+ currentQuestion=0;
+ mistakes=0;
+ hideAll();
+ document.getElementById("game").classList.remove("hidden");
+ document.getElementById("levelTitle").textContent=levels[i].name;
+ showQuestion();
+}
+
+function showQuestion(){
  answered=false;
- document.getElementById("object").textContent=rounds[current].emoji;
+ const q=levels[currentLevel].questions[currentQuestion];
+
+ document.getElementById("object").textContent=q[0];
+ document.getElementById("question").textContent=
+ "Question "+(currentQuestion+1)+" of "+
+ levels[currentLevel].questions.length;
+
  document.getElementById("score").textContent=
- "⭐ Stars: "+stars+" | Round: "+(current+1)+" of 6";
+ "⭐ Correct: "+(currentQuestion-mistakes)+" | Mistakes: "+mistakes;
+
+ document.getElementById("bar").style.width=
+ (currentQuestion/levels[currentLevel].questions.length*100)+"%";
+
  document.getElementById("feedback").textContent="Choose the correct color!";
  document.getElementById("next").disabled=true;
 
  const choices=document.getElementById("choices");
  choices.innerHTML="";
 
- [...colors].sort(()=>Math.random()-.5).forEach(c=>{
+ [...q[2]].sort(()=>Math.random()-.5).forEach(color=>{
   const b=document.createElement("button");
   b.className="choice";
-  b.innerHTML='<span class="swatch" style="background:'+c.hex+'"></span>'+c.name;
-  b.onclick=()=>checkAnswer(c.name,b);
+  b.innerHTML=`
+   <span class="swatch" style="background:${colors[color]||"#ddd"};
+   border:1px solid #ddd"></span>${color}
+  `;
+  b.onclick=()=>checkAnswer(color,b);
   choices.appendChild(b);
  });
 }
@@ -176,36 +303,82 @@ function showRound(){
 function checkAnswer(answer,button){
  if(answered)return;
  answered=true;
+
+ const correct=levels[currentLevel].questions[currentQuestion][1];
+
  document.querySelectorAll(".choice").forEach(b=>b.disabled=true);
 
- if(answer===rounds[current].color){
-  stars++;
+ if(answer===correct){
   button.style.borderColor="#35a66c";
   document.getElementById("feedback").textContent=
-  "🎉 Wonderful! You got it right! ⭐";
+  "🎉 Wonderful! Correct answer! ⭐";
  }else{
+  mistakes++;
+  button.style.borderColor="#ef5350";
   document.getElementById("feedback").textContent=
-  "💛 Good try! The answer is "+rounds[current].color+".";
+  "💛 Good try! The correct answer is "+correct+".";
  }
 
  document.getElementById("score").textContent=
- "⭐ Stars: "+stars+" | Round: "+(current+1)+" of 6";
+ "⭐ Correct: "+(currentQuestion+(answer===correct?1:0)-mistakes)+" | Mistakes: "+mistakes;
+
  document.getElementById("next").disabled=false;
 }
 
-function nextRound(){
- current++;
- if(current>=rounds.length){
-  document.getElementById("game").innerHTML=`
-   <button class="play back" onclick="goHome()">← Home</button>
-   <div style="font-size:75px">🏆🐰</div>
-   <h2>Fantastic Job!</h2>
-   <p>You finished Benny's Color Adventure!</p>
-   <h2>⭐ ${stars} out of 6 stars!</h2>
-   <button class="play" onclick="startGame()">Play Again ↻</button>
-  `;
- }else showRound();
+function nextQuestion(){
+ currentQuestion++;
+
+ if(currentQuestion>=levels[currentLevel].questions.length){
+  finishLevel();
+ }else{
+  showQuestion();
+ }
 }
+
+function finishLevel(){
+ hideAll();
+ const passed=mistakes===0;
+ const next=currentLevel+1;
+
+ if(passed && next<levels.length && unlocked<next+1){
+  unlocked=next+1;
+  localStorage.setItem("bennyUnlocked",unlocked);
+ }
+
+ const result=document.getElementById("result");
+ result.classList.remove("hidden");
+
+ if(passed){
+  result.innerHTML=`
+   <div style="font-size:75px">🏆🐰</div>
+   <h2>Perfect! Amazing Work!</h2>
+   <p>You answered every question correctly!</p>
+   <h2>⭐ 100% Score!</h2>
+   <p>${next<levels.length?
+   "Your next level is now unlocked!":
+   "You are a Rainbow Master!"}</p>
+   <button class="play" onclick="${next<levels.length?
+   "showLevels()":"goHome()"}">
+   ${next<levels.length?"Choose Next Level":"Home"}
+   </button>
+  `;
+ }else{
+  result.innerHTML=`
+   <div style="font-size:70px">🐰💛</div>
+   <h2>Keep Practicing!</h2>
+   <p>You had ${mistakes} incorrect answer(s).</p>
+   <h2>100% is needed to unlock the next level.</h2>
+   <p>Try again. Benny believes in you!</p>
+   <button class="play" onclick="startLevel(${currentLevel})">
+   Try Again ↻
+   </button>
+   <br><br>
+   <button class="play back" onclick="showLevels()">Back to Levels</button>
+  `;
+ }
+}
+
+goHome();
 </script>
 </body>
 </html>
