@@ -39,7 +39,31 @@ h2{color:#397c9a}
 .progress{height:12px;background:#eee;border-radius:20px;overflow:hidden;margin:15px 0}
 .bar{height:100%;background:#62b98b;width:0%;transition:width .2s}
 footer{padding:20px;color:#887b70;font-size:13px}
-@media(max-width:360px){.choices{gap:5px}.choice{font-size:13px;padding:9px 2px}}
+
+/* LEVEL 5 */
+.drag-instructions{background:#eef9ff;padding:14px;border-radius:15px;margin:12px 0;font-size:14px;line-height:1.5}
+.drag-layout{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.drag-column{background:#f7f8fa;border-radius:16px;padding:9px 6px;min-width:0}
+.drag-column h3{font-size:15px;color:#397c9a;margin:8px 0 12px}
+.drag-item,.drop-target{border-radius:13px;min-height:85px;margin:9px 0;padding:9px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.drag-item{background:white;border:2px solid #e4e9ed;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.drag-item .emoji{font-size:37px}
+.drag-item .item-label{font-size:12px;font-weight:bold;line-height:1.3}
+.drag-item.selected{border:3px solid #62b98b;background:#e9fff2}
+.drag-item.matched{opacity:.3;pointer-events:none}
+.drop-target{background:white;border:3px dashed #c5d3dc;cursor:pointer}
+.drop-target .swatch{width:39px;height:39px;margin:0}
+.drop-target strong{font-size:13px}
+.drop-target.matched{border:3px solid #62b98b;background:#eafff1;border-style:solid}
+.drop-target.wrong{border-color:#ef5350;background:#fff0f0}
+.drag-hint{font-size:12px;color:#777;line-height:1.5}
+@media(max-width:360px){
+.choices{gap:5px}
+.choice{font-size:13px;padding:9px 2px}
+.drag-layout{gap:6px}
+.drag-item,.drop-target{min-height:78px}
+.drag-item .emoji{font-size:32px}
+}
 </style>
 </head>
 <body>
@@ -83,6 +107,8 @@ footer{padding:20px;color:#887b70;font-size:13px}
 <h2 id="levelTitle"></h2>
 <div class="score" id="score"></div>
 <div class="progress"><div class="bar" id="bar"></div></div>
+
+<div id="regularGame">
 <div class="question" id="question"></div>
 <div class="object-card" id="objectCard">
 <div class="object" id="object"></div>
@@ -90,6 +116,26 @@ footer{padding:20px;color:#887b70;font-size:13px}
 <div class="object-name" id="objectName"></div>
 <div class="question">What color is this object?</div>
 <div class="choices" id="choices"></div>
+</div>
+
+<div id="dragGame" class="hidden">
+<div class="drag-instructions">
+🐰 Help Benny match every object to its correct color!
+<br><strong>Drag an object to its matching color.</strong>
+</div>
+<div class="drag-layout">
+<div class="drag-column">
+<h3>🎁 OBJECTS</h3>
+<div id="dragObjects"></div>
+</div>
+<div class="drag-column">
+<h3>🎨 COLORS</h3>
+<div id="dropTargets"></div>
+</div>
+</div>
+<p class="drag-hint">You can also tap an object, then tap its matching color!</p>
+</div>
+
 <div class="feedback" id="feedback">Choose your answer!</div>
 <button class="play" id="next" onclick="nextQuestion()" disabled>Next Question ➜</button>
 </section>
@@ -152,18 +198,14 @@ questions:[
 ["👜","Leather handbag","Brown","Blue","Pink"]
 ]},
 {
-name:"Color Genius",subtitle:"The ultimate color challenge",
+name:"Color Genius",subtitle:"Drag and match the colors!",
 questions:[
-["🚘","Toy convertible car","Pink","Green","Yellow"],
-["🪑","Wooden rocking chair","Brown","Blue","White"],
-["🔭","Telescope","Blue","Orange","Pink"],
-["🏺","Ceramic vase","Orange","Blue","Purple"],
-["📷","Luxury camera","Black","White","Yellow"],
-["🛋️","Velvet armchair","Green","Red","Pink"],
-["🏁","Racing flag","Red","Blue","Green"],
-["🐎","Marble horse statue","White","Brown","Black"],
-["🎻","Violin","Purple","Yellow","Orange"],
-["🏆","Trophy","Yellow","Purple","Blue"]
+["🎹","Black piano","Black"],
+["🛼","Purple roller skate","Purple"],
+["🏰","Pink toy castle","Pink"],
+["🦖","Green dinosaur","Green"],
+["🚒","Red fire truck","Red"],
+["🦆","Yellow rubber duck","Yellow"]
 ]}
 ];
 
@@ -183,12 +225,17 @@ const j=Math.floor(Math.random()*(i+1));
 return a;
 }
 
-let unlocked=Number(localStorage.getItem("bennyColorUnlocked2026")||1);
+let unlocked=Math.max(1,Math.min(5,Number(localStorage.getItem("bennyColorUnlocked2026")||1)));
 let currentLevel=0;
 let questions=[];
 let currentQuestion=0;
 let mistakes=0;
 let answered=false;
+let selectedObject=null;
+let dragStart=null;
+let dragMoved=false;
+let matchedCount=0;
+let dragItems=[];
 
 function hideAll(){
 ["home","levels","game","result"].forEach(id=>
@@ -218,6 +265,7 @@ if(open)item.querySelector("button").onclick=()=>startLevel(i);
 list.appendChild(item);
 });
 }
+
 function startLevel(i){
 currentLevel=i;
 questions=shuffle(levels[i].questions);
@@ -226,8 +274,19 @@ mistakes=0;
 hideAll();
 document.getElementById("game").classList.remove("hidden");
 document.getElementById("levelTitle").textContent=levels[i].name;
+
+const isDrag=i===4;
+document.getElementById("regularGame").classList.toggle("hidden",isDrag);
+document.getElementById("dragGame").classList.toggle("hidden",!isDrag);
+document.getElementById("next").classList.toggle("hidden",isDrag);
+
+if(isDrag){
+startDragGame();
+}else{
 showQuestion();
 }
+}
+
 function showQuestion(){
 answered=false;
 const q=questions[currentQuestion];
@@ -243,6 +302,7 @@ document.getElementById("bar").style.width=
 (currentQuestion/questions.length*100)+"%";
 document.getElementById("feedback").textContent="Choose the correct color!";
 document.getElementById("next").disabled=true;
+
 const choices=document.getElementById("choices");
 choices.innerHTML="";
 shuffle([q[2],q[3],q[4]]).forEach(color=>{
@@ -253,11 +313,13 @@ b.onclick=()=>checkAnswer(color,b);
 choices.appendChild(b);
 });
 }
+
 function checkAnswer(answer,button){
 if(answered)return;
 answered=true;
 const correct=questions[currentQuestion][2];
 document.querySelectorAll(".choice").forEach(b=>b.disabled=true);
+
 if(answer===correct){
 button.style.borderColor="#35a66c";
 document.getElementById("feedback").textContent="🎉 Wonderful! Correct answer!";
@@ -267,11 +329,13 @@ button.style.borderColor="#ef5350";
 document.getElementById("feedback").textContent=
 "💛 Good try! The correct answer is "+correct+".";
 }
+
 document.getElementById("score").textContent=
 "⭐ Correct: "+(currentQuestion+(answer===correct?1:0)-mistakes)+
 " | Mistakes: "+mistakes;
 document.getElementById("next").disabled=false;
 }
+
 function nextQuestion(){
 currentQuestion++;
 if(currentQuestion>=questions.length){
@@ -280,24 +344,178 @@ finishLevel();
 showQuestion();
 }
 }
+
+/* LEVEL 5 DRAG AND MATCH */
+
+function startDragGame(){
+matchedCount=0;
+selectedObject=null;
+dragStart=null;
+dragItems=shuffle(levels[4].questions);
+
+document.getElementById("score").textContent=
+"⭐ Matched: 0 / 6 | Mistakes: 0";
+document.getElementById("bar").style.width="0%";
+document.getElementById("feedback").textContent="Let's match the colors!";
+
+const objects=document.getElementById("dragObjects");
+const targets=document.getElementById("dropTargets");
+objects.innerHTML="";
+targets.innerHTML="";
+
+const shuffledColors=shuffle(dragItems.map(q=>q[2]));
+
+dragItems.forEach((q,index)=>{
+const item=document.createElement("div");
+item.className="drag-item";
+item.dataset.index=index;
+item.innerHTML=`
+<span class="emoji">${q[0]}</span>
+<span class="item-label">${q[1]}</span>`;
+item.addEventListener("pointerdown",startDragging);
+item.addEventListener("pointerup",endDragging);
+item.addEventListener("pointercancel",cancelDragging);
+objects.appendChild(item);
+});
+
+shuffledColors.forEach(color=>{
+const target=document.createElement("div");
+target.className="drop-target";
+target.dataset.color=color;
+target.innerHTML=`
+<span class="swatch" style="background:${colors[color]}"></span>
+<strong>${color}</strong>`;
+target.addEventListener("click",()=>chooseTarget(target));
+targets.appendChild(target);
+});
+}
+
+function startDragging(e){
+const item=e.currentTarget;
+if(item.classList.contains("matched"))return;
+e.preventDefault();
+
+dragStart={
+item:item,
+x:e.clientX,
+y:e.clientY,
+index:Number(item.dataset.index)
+};
+dragMoved=false;
+}
+
+function endDragging(e){
+if(!dragStart)return;
+
+const item=dragStart.item;
+const dx=e.clientX-dragStart.x;
+const dy=e.clientY-dragStart.y;
+
+if(Math.abs(dx)+Math.abs(dy)>12){
+dragMoved=true;
+const element=document.elementFromPoint(e.clientX,e.clientY);
+const target=element?element.closest(".drop-target"):null;
+
+if(target&&!target.classList.contains("matched")){
+matchObject(item,target);
+}
+}else{
+selectObject(item);
+}
+
+dragStart=null;
+}
+
+function cancelDragging(){
+dragStart=null;
+}
+
+function selectObject(item){
+if(item.classList.contains("matched"))return;
+
+document.querySelectorAll(".drag-item").forEach(el=>
+el.classList.remove("selected"));
+
+selectedObject=item;
+item.classList.add("selected");
+
+document.getElementById("feedback").textContent=
+"Now choose the "+dragItems[Number(item.dataset.index)][2]+" color!";
+}
+
+function chooseTarget(target){
+if(!selectedObject||target.classList.contains("matched"))return;
+matchObject(selectedObject,target);
+}
+
+function matchObject(item,target){
+if(!item||item.classList.contains("matched"))return;
+if(target.classList.contains("matched"))return;
+
+const index=Number(item.dataset.index);
+const correctColor=dragItems[index][2];
+const chosenColor=target.dataset.color;
+
+if(correctColor===chosenColor){
+item.classList.remove("selected");
+item.classList.add("matched");
+target.classList.add("matched");
+
+const label=target.querySelector("strong");
+label.textContent="✓ "+chosenColor;
+
+matchedCount++;
+selectedObject=null;
+
+document.getElementById("score").textContent=
+"⭐ Matched: "+matchedCount+" / 6 | Mistakes: "+mistakes;
+document.getElementById("bar").style.width=
+(matchedCount/6*100)+"%";
+
+document.getElementById("feedback").textContent=
+"🎉 Great matching! "+matchedCount+" of 6 completed!";
+
+if(matchedCount===6){
+setTimeout(finishLevel,700);
+}
+}else{
+mistakes++;
+target.classList.add("wrong");
+
+document.getElementById("score").textContent=
+"⭐ Matched: "+matchedCount+" / 6 | Mistakes: "+mistakes;
+
+document.getElementById("feedback").textContent=
+"💛 Try another color! Keep going!";
+
+setTimeout(()=>target.classList.remove("wrong"),600);
+}
+}
+
 function finishLevel(){
 hideAll();
+
 const passed=mistakes===0;
 const next=currentLevel+1;
+
 if(passed&&next<levels.length&&unlocked<next+1){
 unlocked=next+1;
 localStorage.setItem("bennyColorUnlocked2026",unlocked);
 }
+
 const result=document.getElementById("result");
 result.classList.remove("hidden");
+
 if(passed){
 const champion=currentLevel===levels.length-1;
+
 result.innerHTML=`
 <div style="font-size:75px">🏆🐰</div>
 <h2>${champion?"You Did It, Color Genius!":"Perfect! Amazing Work!"}</h2>
 <p>You answered every question correctly!</p>
 <h2>⭐ 100% Score!</h2>
-<p>${champion?"You are Benny's Color Genius Champion!":
+<p>${champion?
+"You are Benny's Color Genius Champion!":
 "Your next level is now unlocked!"}</p>
 <button class="play" onclick="${champion?"goHome()":"showLevels()"}">
 ${champion?"Back Home":"Choose Next Level"}
@@ -307,13 +525,14 @@ result.innerHTML=`
 <div style="font-size:70px">🐰💛</div>
 <h2>Keep Practicing!</h2>
 <p>You had ${mistakes} incorrect answer(s).</p>
-<h3>100% is needed to unlock the next level.</h3>
+<h3>100% is needed to pass this level.</h3>
 <p>Try again. Benny believes in you!</p>
 <button class="play" onclick="startLevel(${currentLevel})">Try Again ↻</button>
 <br><br>
 <button class="play back" onclick="showLevels()">Back to Levels</button>`;
 }
 }
+
 goHome();
 </script>
 </body>
