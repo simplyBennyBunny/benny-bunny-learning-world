@@ -4,302 +4,292 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#8bded0">
-<title>Benny Bunny Learning World</title>
+<title>Benny Bunny - Color Adventure</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f0fbff;color:#334155;text-align:center}
-header{background:linear-gradient(135deg,#8be0d0,#b9e9ff);padding:25px 12px}
-.bunny{font-size:65px}
-h1{color:#236b70;margin:5px;font-size:26px}
-header p{margin:7px}
-main{max-width:550px;margin:auto;padding:16px}
-.card{background:white;border-radius:22px;padding:20px;margin:14px 0;box-shadow:0 4px 15px #b7d7e455}
-h2{color:#287e83}
-button{border:0;border-radius:15px;padding:14px 17px;font-size:16px;font-weight:bold;cursor:pointer;margin:5px;background:#78d8c3;color:#174e4d}
-button:disabled{opacity:.5}
-button:active{transform:scale(.97)}
-.modes button{width:100%;margin:6px 0}
-.secondary{background:#e8efff;color:#405c91}
-.pattern{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin:25px 0}
-.dot{width:43px;height:43px;border-radius:50%;border:2px solid white;box-shadow:0 2px 5px #0002}
-.question{font-size:30px;font-weight:bold}
-.answers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.answer{background:#f0f5fa;color:#334155;padding:12px 4px;border:3px solid transparent}
-.answer .dot{display:block;margin:0 auto 7px}
-.selected{border-color:#159d85;background:#e0fff5}
-.feedback{font-size:19px;font-weight:bold;min-height:30px;margin:15px}
-.stats{display:flex;justify-content:space-around;gap:8px;flex-wrap:wrap}
-.stat{background:#eaf9f5;padding:12px;border-radius:12px;flex:1}
-.levels{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.level{background:#e8efff;color:#405c91}
-.locked{background:#e5e7eb;color:#777}
-.hidden{display:none}
-.small{font-size:13px;color:#64748b}
-footer{padding:20px;color:#779099;font-size:13px}
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fff7e9;
+  color: #51443c;
+  text-align: center;
+}
+
+header {
+  background: #bce9f4;
+  padding: 22px 12px;
+}
+
+h1 {
+  color: #397c9a;
+  margin: 5px;
+  font-size: 27px;
+}
+
+.subtitle { margin: 8px; }
+
+main {
+  max-width: 520px;
+  margin: 20px auto;
+  padding: 16px;
+}
+
+.benny {
+  font-size: 75px;
+  margin: 5px;
+}
+
+.card {
+  background: white;
+  border-radius: 22px;
+  padding: 22px 15px;
+  box-shadow: 0 4px 12px #00000012;
+}
+
+.object {
+  font-size: 85px;
+  margin: 15px;
+}
+
+.question {
+  font-size: 21px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.choice {
+  border: 3px solid transparent;
+  border-radius: 15px;
+  padding: 14px 5px;
+  background: #f5f5f5;
+  font-size: 19px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.choice:disabled {
+  opacity: 0.8;
+  cursor: default;
+}
+
+.swatch {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+}
+
+.feedback {
+  min-height: 35px;
+  font-size: 19px;
+  font-weight: bold;
+  margin: 18px 0;
+}
+
+button.next {
+  background: #62b98b;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 14px 30px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.next:disabled {
+  background: #cccccc;
+}
+
+.score {
+  font-size: 17px;
+  margin: 15px;
+}
+
+footer {
+  padding: 20px;
+  color: #8b7b70;
+  font-size: 13px;
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<div class="bunny">🐰</div>
-<h1>Benny Bunny's Learning & Play World</h1>
-<p>🌈 Learn • Play • Think • Grow Together!</p>
+  <div class="benny">🐰</div>
+  <h1>Benny's Color Adventure!</h1>
+  <p class="subtitle">Learn colors, play and shine!</p>
 </header>
 
 <main>
-<section id="home">
-<div class="card">
-<h2>Hello, Little Learners!</h2>
-<p>I'm Benny Bunny! Are you ready for a fun learning adventure?</p>
-<h2>⭐ Choose How to Play</h2>
-<div class="modes">
-<button onclick="start('solo')">👤 Solo Play</button>
-<button onclick="start('shared')">👫 Shared Play – Take Turns</button>
-<button onclick="start('competition')">🏆 Friendly Competition – 2 Players</button>
-</div>
-</div>
-<div class="card">
-<h2>🔓 Learning Levels</h2>
-<div class="levels" id="levelList"></div>
-<p class="small">Earn at least 3 stars out of 5 to unlock the next level.</p>
-</div>
-</section>
+  <div class="score" id="score">
+    ⭐ Stars: 0 | Round: 1 of 6
+  </div>
 
-<section id="game" class="hidden">
-<div class="card">
-<button class="secondary" onclick="goHome()">← Home</button>
-<h2 id="modeTitle"></h2>
-<div class="stats">
-<div class="stat">Question<br><b id="progress">1/5</b></div>
-<div class="stat">⭐ Stars<br><b id="stars">0</b></div>
-<div class="stat" id="turnStat">Player<br><b id="player">You</b></div>
-</div>
-<h2 id="levelTitle"></h2>
-<p id="instruction">What color comes next?</p>
-<div class="pattern" id="pattern"></div>
-<div class="question">What comes next?</div>
-<div class="answers" id="answers"></div>
-<div class="feedback" id="feedback"></div>
-<button id="check" onclick="checkAnswer()" disabled>Check Answer ✓</button>
-<button id="next" class="hidden" onclick="nextQuestion()">Next Question →</button>
-</div>
-</section>
+  <section class="card">
+    <div class="question" id="question">
+      Hello, little learner!
+    </div>
 
-<section id="result" class="hidden">
-<div class="card">
-<div style="font-size:65px">🎉🐰🏆</div>
-<h2 id="resultTitle">Wonderful Work!</h2>
-<p id="resultMessage"></p>
-<div class="stats">
-<div class="stat">⭐ Stars<br><b id="finalStars"></b></div>
-<div class="stat">🏆 Score<br><b id="finalScore"></b></div>
-</div>
-<div id="winner"></div>
-<button onclick="goHome()">Back to Learning World</button>
-<button class="secondary" onclick="restart()">Play Again</button>
-</div>
-</section>
+    <div class="object" id="object">🍎</div>
+
+    <div class="question">
+      What color is this object?
+    </div>
+
+    <div class="choices" id="choices"></div>
+
+    <div class="feedback" id="feedback">
+      Choose the correct color!
+    </div>
+
+    <button class="next" id="next" onclick="nextRound()" disabled>
+      Next Round ➜
+    </button>
+  </section>
 </main>
-<footer>© 2026 Benny Bunny Learning World</footer>
+
+<footer>
+  Benny Bunny Learning World © 2026
+  <br>Learn • Play • Grow
+</footer>
 
 <script>
-const colors={
-RED:"#ef5350",YELLOW:"#ffd54f",BLUE:"#4285e9",
-GREEN:"#43a86b",PURPLE:"#a879d9",ORANGE:"#ff993d"
-};
-
-const levels=[
-[
-{seq:["RED","YELLOW","RED","YELLOW"],answer:"RED"},
-{seq:["BLUE","GREEN","BLUE","GREEN"],answer:"BLUE"},
-{seq:["RED","BLUE","RED","BLUE"],answer:"RED"},
-{seq:["GREEN","YELLOW","GREEN","YELLOW"],answer:"GREEN"},
-{seq:["ORANGE","PURPLE","ORANGE","PURPLE"],answer:"ORANGE"}
-],
-[
-{seq:["RED","BLUE","YELLOW","RED","BLUE"],answer:"YELLOW"},
-{seq:["GREEN","RED","BLUE","GREEN","RED"],answer:"BLUE"},
-{seq:["PURPLE","YELLOW","GREEN","PURPLE","YELLOW"],answer:"GREEN"},
-{seq:["BLUE","BLUE","RED","BLUE","BLUE"],answer:"RED"},
-{seq:["ORANGE","GREEN","GREEN","ORANGE","GREEN","GREEN"],answer:"ORANGE"}
-],
-[
-{seq:["RED","BLUE","GREEN","RED","BLUE","GREEN"],answer:"RED"},
-{seq:["YELLOW","YELLOW","BLUE","YELLOW","YELLOW"],answer:"BLUE"},
-{seq:["RED","GREEN","BLUE","YELLOW","RED","GREEN","BLUE"],answer:"YELLOW"},
-{seq:["PURPLE","ORANGE","PURPLE","GREEN","PURPLE","ORANGE"],answer:"PURPLE"},
-{seq:["BLUE","GREEN","YELLOW","BLUE","GREEN","YELLOW","BLUE"],answer:"GREEN"}
-]
+const rounds = [
+  {name:"Apple", emoji:"🍎", color:"Red"},
+  {name:"Ocean", emoji:"🌊", color:"Blue"},
+  {name:"Banana", emoji:"🍌", color:"Yellow"},
+  {name:"Frog", emoji:"🐸", color:"Green"},
+  {name:"Carrot", emoji:"🥕", color:"Orange"},
+  {name:"Grapes", emoji:"🍇", color:"Purple"}
 ];
 
-let mode="solo",level=0,index=0,score=0,choice=null;
-let playerTurn=0,playerScores=[0,0],names=["Player 1","Player 2"];
-let starsEarned=0,answered=false;
+const colors = [
+  {name:"Red", hex:"#ef5350"},
+  {name:"Blue", hex:"#42a5f5"},
+  {name:"Yellow", hex:"#fdd835"},
+  {name:"Green", hex:"#66bb6a"},
+  {name:"Orange", hex:"#ff9800"},
+  {name:"Purple", hex:"#ab7bc8"}
+];
 
-function unlocked(){
-return Number(localStorage.getItem("bennyLevel")||0);
+let current = 0;
+let stars = 0;
+let answered = false;
+
+function showRound() {
+  answered = false;
+
+  const round = rounds[current];
+
+  document.getElementById("question").textContent =
+    "Can you help Benny find the color?";
+
+  document.getElementById("object").textContent = round.emoji;
+
+  document.getElementById("score").textContent =
+    `⭐ Stars: ${stars} | Round: ${current + 1} of 6`;
+
+  document.getElementById("feedback").textContent =
+    "Choose the correct color!";
+
+  document.getElementById("next").disabled = true;
+
+  const choices = document.getElementById("choices");
+  choices.innerHTML = "";
+
+  const shuffled = [...colors].sort(() => Math.random() - 0.5);
+
+  shuffled.forEach(color => {
+    const button = document.createElement("button");
+    button.className = "choice";
+
+    button.innerHTML = `
+      <span class="swatch"
+      style="background:${color.hex}"></span>
+      ${color.name}
+    `;
+
+    button.onclick = () => checkAnswer(color.name, button);
+    choices.appendChild(button);
+  });
 }
 
-function renderLevels(){
-document.getElementById("levelList").innerHTML=levels.map((l,i)=>
-`<button class="level ${i>unlocked()?'locked':''}"
-${i>unlocked()?'disabled':''}
-onclick="chooseLevel(${i})">
-${i>unlocked()?'🔒':'⭐'} Level ${i+1}
-</button>`).join("");
+function checkAnswer(answer, button) {
+  if (answered) return;
+
+  answered = true;
+
+  const correct = rounds[current].color;
+  const buttons = document.querySelectorAll(".choice");
+
+  buttons.forEach(b => b.disabled = true);
+
+  if (answer === correct) {
+    stars++;
+    button.style.borderColor = "#35a66c";
+    document.getElementById("feedback").textContent =
+      "🎉 Wonderful! You got it right! ⭐";
+  } else {
+    document.getElementById("feedback").textContent =
+      `💛 Good try! The correct answer is ${correct}.`;
+  }
+
+  document.getElementById("score").textContent =
+    `⭐ Stars: ${stars} | Round: ${current + 1} of 6`;
+
+  document.getElementById("next").disabled = false;
 }
 
-function chooseLevel(n){
-level=n;
-start("solo");
+function nextRound() {
+  current++;
+
+  if (current >= rounds.length) {
+    document.querySelector(".card").innerHTML = `
+      <div style="font-size:75px">🏆🐰</div>
+      <h2>Fantastic Job, Little Learner!</h2>
+      <p>You finished Benny's Color Adventure!</p>
+      <h2>⭐ ${stars} out of 6 stars!</h2>
+      <p>Keep learning and shining!</p>
+      <button class="next" onclick="restartGame()">
+        Play Again ↻
+      </button>
+    `;
+  } else {
+    showRound();
+  }
 }
 
-function start(selectedMode){
-mode=selectedMode;
-index=0;score=0;starsEarned=0;
-playerTurn=0;playerScores=[0,0];
-choice=null;answered=false;
+function restartGame() {
+  current = 0;
+  stars = 0;
 
-document.getElementById("home").classList.add("hidden");
-document.getElementById("result").classList.add("hidden");
-document.getElementById("game").classList.remove("hidden");
+  document.querySelector(".card").innerHTML = `
+    <div class="question" id="question"></div>
+    <div class="object" id="object"></div>
+    <div class="question">What color is this object?</div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next" id="next"
+    onclick="nextRound()" disabled>Next Round ➜</button>
+  `;
 
-const titles={
-solo:"👤 Solo Adventure",
-shared:"👫 Shared Play – Take Turns",
-competition:"🏆 Friendly Competition"
-};
-document.getElementById("modeTitle").textContent=titles[mode];
-showQuestion();
+  showRound();
 }
 
-function showQuestion(){
-choice=null;answered=false;
-let q=levels[level][index];
-
-document.getElementById("progress").textContent=(index+1)+"/5";
-document.getElementById("stars").textContent=starsEarned;
-document.getElementById("levelTitle").textContent=
-"Level "+(level+1)+" – "+["Easy","Medium","Advanced"][level];
-
-document.getElementById("pattern").innerHTML=
-q.seq.map(c=>`<div class="dot" style="background:${colors[c]}"></div>`).join("")+
-`<div class="question">?</div>`;
-
-let options=[q.answer];
-let available=Object.keys(colors).filter(c=>c!==q.answer);
-while(options.length<3){
-let c=available[Math.floor(Math.random()*available.length)];
-if(!options.includes(c))options.push(c);
-}
-options.sort(()=>Math.random()-.5);
-
-document.getElementById("answers").innerHTML=options.map(c=>
-`<button class="answer" onclick="selectAnswer('${c}',this)">
-<span class="dot" style="background:${colors[c]}"></span>${c}
-</button>`).join("");
-
-document.getElementById("feedback").textContent="";
-document.getElementById("check").classList.remove("hidden");
-document.getElementById("check").disabled=true;
-document.getElementById("next").classList.add("hidden");
-
-let turn=mode==="competition"||mode==="shared";
-document.getElementById("turnStat").classList.toggle("hidden",!turn);
-document.getElementById("player").textContent=
-mode==="competition"?names[playerTurn]:
-mode==="shared"?"Player "+(playerTurn+1):"You";
-
-document.getElementById("instruction").textContent=
-mode==="shared"?"Take turns and help each other!":
-mode==="competition"?"It's your turn. Good luck!":
-"Look carefully. Which color comes next?";
-}
-
-function selectAnswer(c,button){
-if(answered)return;
-choice=c;
-document.querySelectorAll(".answer").forEach(b=>b.classList.remove("selected"));
-button.classList.add("selected");
-document.getElementById("check").disabled=false;
-}
-
-function checkAnswer(){
-if(!choice||answered)return;
-answered=true;
-let correct=choice===levels[level][index].answer;
-let message=document.getElementById("feedback");
-
-if(correct){
-starsEarned++;
-score++;
-if(mode==="competition")playerScores[playerTurn]++;
-message.textContent="🎉 Correct! Great job!";
-message.style.color="#159d85";
-}else{
-message.textContent="💛 Good try! The answer is "+levels[level][index].answer+".";
-message.style.color="#c17b38";
-}
-
-document.getElementById("stars").textContent=starsEarned;
-document.querySelectorAll(".answer").forEach(b=>b.disabled=true);
-document.getElementById("check").classList.add("hidden");
-document.getElementById("next").classList.remove("hidden");
-}
-
-function nextQuestion(){
-if(mode==="competition"||mode==="shared"){
-playerTurn=1-playerTurn;
-}
-index++;
-if(index>=5){
-finish();
-}else{
-showQuestion();
-}
-}
-
-function finish(){
-document.getElementById("game").classList.add("hidden");
-document.getElementById("result").classList.remove("hidden");
-
-let previous=unlocked();
-let passed=starsEarned>=3;
-
-if(passed&&level<2&&level>=previous){
-localStorage.setItem("bennyLevel",String(level+1));
-}
-
-document.getElementById("finalStars").textContent=starsEarned+"/5";
-document.getElementById("finalScore").textContent=score+"/5";
-document.getElementById("resultTitle").textContent=
-passed?"🌟 Amazing Work!":"🐰 Keep Practicing!";
-
-document.getElementById("resultMessage").textContent=
-passed?"You earned enough stars to complete this level!":
-"Earn at least 3 stars to unlock the next level. You can try again!";
-
-let winner="";
-if(mode==="competition"){
-if(playerScores[0]>playerScores[1])winner="🏆 Player 1 wins!";
-else if(playerScores[1]>playerScores[0])winner="🏆 Player 2 wins!";
-else winner="🤝 It's a tie! Great teamwork!";
-}else if(mode==="shared"){
-winner="💚 Wonderful teamwork! Your group earned "+score+" points.";
-}
-document.getElementById("winner").textContent=winner;
-renderLevels();
-}
-
-function restart(){start(mode)}
-function goHome(){
-document.getElementById("game").classList.add("hidden");
-document.getElementById("result").classList.add("hidden");
-document.getElementById("home").classList.remove("hidden");
-renderLevels();
-}
-renderLevels();
+showRound();
 </script>
+
 </body>
-  </html>
-  
+</html>
